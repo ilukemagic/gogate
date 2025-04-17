@@ -1,0 +1,19 @@
+# 二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试二进制文件
+*.test
+
+# 输出文件
+*.out
+
+# 依赖目录
+vendor/
+
+# IDE 目录
+.idea/
+.vscode/ 

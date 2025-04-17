@@ -1,0 +1,5 @@
+proxy:
+  listen: ":8080"
+  routes:
+    "/api/test": "http://localhost:8081"
+    "/api/users": "http://localhost:8082"
