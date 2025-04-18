@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -9,8 +10,14 @@ import (
 )
 
 func main() {
-	// 获取配置
-	cfg := config.DefaultConfig()
+	configPath := flag.String("config", "configs/config.yaml", "path to config file")
+	flag.Parse()
+
+	// 加载配置
+	cfg, err := config.LoadConfig(*configPath)
+	if err != nil {
+		log.Fatal("Failed to load config:", err)
+	}
 
 	// 创建代理处理器
 	proxyHandler, err := handler.NewProxyHandler(cfg.Proxy.Routes)
@@ -23,9 +30,7 @@ func main() {
 
 	// 健康检查接口
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status": "ok",
-		})
+		c.JSON(200, gin.H{"status": "ok"})
 	})
 
 	// 注册代理路由

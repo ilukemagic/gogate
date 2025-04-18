@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -33,28 +32,22 @@ func NewProxyHandler(routes map[string]string) (*ProxyHandler, error) {
 // Handle 处理代理请求
 func (h *ProxyHandler) Handle(c *gin.Context) {
 	path := c.Request.URL.Path
-	log.Printf("Received request for path: %s", path)
 
+	// 使用最长路径匹配
 	var matchedProxy *proxy.ReverseProxy
 	var longestMatch string
 
 	for route, p := range h.proxies {
-		log.Printf("Checking route: %s", route)
-		if strings.HasPrefix(path, route) {
-			if len(route) > len(longestMatch) {
-				longestMatch = route
-				matchedProxy = p
-				log.Printf("Found matching route: %s", route)
-			}
+		if strings.HasPrefix(path, route) && len(route) > len(longestMatch) {
+			longestMatch = route
+			matchedProxy = p
 		}
 	}
 
 	if matchedProxy == nil {
-		log.Printf("No matching route found for: %s", path)
 		c.JSON(404, gin.H{"error": "route not found"})
 		return
 	}
 
-	log.Printf("Proxying request to route: %s", longestMatch)
 	matchedProxy.ServeHTTP(c.Writer, c.Request)
 }

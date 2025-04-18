@@ -1,5 +1,11 @@
 package config
 
+import (
+	"os"
+
+	"gopkg.in/yaml.v3"
+)
+
 // ProxyConfig 代理配置
 type ProxyConfig struct {
 	Listen string            `yaml:"listen"`
@@ -11,7 +17,21 @@ type Config struct {
 	Proxy ProxyConfig `yaml:"proxy"`
 }
 
-// DefaultConfig 返回默认配置
+func LoadConfig(path string) (*Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg := &Config{}
+	if err := yaml.Unmarshal(data, cfg); err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+// DefaultConfig 仅用于开发测试
 func DefaultConfig() *Config {
 	return &Config{
 		Proxy: ProxyConfig{
