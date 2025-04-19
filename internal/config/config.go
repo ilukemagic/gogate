@@ -29,10 +29,25 @@ type JWTConfig struct {
 	Exclude   []string `yaml:"exclude"` // 不需要验证的路径
 }
 
+// 限流配置
+type RateLimitConfig struct {
+	Enable bool                            `yaml:"enable"` // 是否启用限流
+	Rate   int                             `yaml:"rate"`   // 每秒允许的请求数
+	Burst  int                             `yaml:"burst"`  // 突发流量的容量
+	Routes map[string]RateLimitRouteConfig `yaml:"routes"` // 特定路由的限流配置
+}
+
+// 特定路由的限流配置
+type RateLimitRouteConfig struct {
+	Rate  int `yaml:"rate"`  // 每秒允许的请求数
+	Burst int `yaml:"burst"` // 突发流量的容量
+}
+
 // 全局配置
 type Config struct {
-	Proxy ProxyConfig `yaml:"proxy"`
-	JWT   JWTConfig   `yaml:"jwt"`
+	Proxy     ProxyConfig     `yaml:"proxy"`
+	JWT       JWTConfig       `yaml:"jwt"`
+	RateLimit RateLimitConfig `yaml:"rateLimit"`
 }
 
 func LoadConfig(path string) (*Config, error) {

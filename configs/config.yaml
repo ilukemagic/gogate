@@ -18,3 +18,12 @@ jwt:
   secretKey: "your-secret-key-here"
   exclude:
     - "/health"
+
+rateLimit:
+  enable: true
+  rate: 5 # 全局默认限流：每秒100个请求
+  burst: 3 # 最多允许突发50个请求
+  routes:
+    "/api/test":
+      rate: 2 # 对特定路由限流：每秒10个请求
+      burst: 1 # 最多允许突发5个请求

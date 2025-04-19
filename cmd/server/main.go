@@ -27,6 +27,9 @@ func main() {
 		cfg.JWT.Exclude,
 	)
 
+	// 创建限流中间件
+	rateLimiter := middleware.NewRateLimiter(cfg.RateLimit)
+
 	// 创建代理处理器
 	proxyHandler, err := handler.NewProxyHandler(cfg.Proxy.Routes)
 	if err != nil {
@@ -64,6 +67,9 @@ func main() {
 			"token": token,
 		})
 	})
+
+	// 应用限流中间件
+	r.Use(rateLimiter.Handle())
 
 	// 注册API路由处理中间件
 	r.Use(func(c *gin.Context) {
