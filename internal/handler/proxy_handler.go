@@ -18,7 +18,17 @@ func NewProxyHandler(routes map[string]config.RouteConfig) (*ProxyHandler, error
 	proxies := make(map[string]*proxy.ReverseProxy)
 
 	for path, route := range routes {
-		p, err := proxy.NewReverseProxy(route.Targets)
+		// 转换配置为权重映射
+		weightMap := make(map[string]int)
+		targets := make([]string, 0, len(route.Targets))
+
+		for _, target := range route.Targets {
+			weightMap[target.URL] = target.Weight
+			targets = append(targets, target.URL)
+		}
+
+		// 创建反向代理
+		p, err := proxy.NewReverseProxy(targets, weightMap)
 		if err != nil {
 			return nil, err
 		}

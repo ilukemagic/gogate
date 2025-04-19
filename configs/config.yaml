@@ -3,9 +3,13 @@ proxy:
   routes:
     "/api/test":
       targets:
-        - "http://localhost:8081"
-        - "http://localhost:8082"
+        - url: "http://localhost:8081"
+          weight: 3 # 权重为3，表示每5次请求中约3次转发到这里
+        - url: "http://localhost:8082"
+          weight: 2 # 权重为2，表示每5次请求中约2次转发到这里
     "/api/users":
       targets:
-        - "http://localhost:8083"
-        - "http://localhost:8084"
+        - url: "http://localhost:8083"
+          weight: 1
+        - url: "http://localhost:8084"
+          weight: 1

@@ -11,14 +11,14 @@ import (
 
 // 封装反向代理的基本功能
 type ReverseProxy struct {
-	balancer balancer.LoadBalancer
+	balancer *balancer.WeightedRoundRobin
 	proxies  map[string]*httputil.ReverseProxy
 }
 
 // 创建反向代理实例
-func NewReverseProxy(targets []string) (*ReverseProxy, error) {
-	// 创建负载均衡器
-	lb := balancer.NewRoundRobin(targets)
+func NewReverseProxy(targets []string, weights map[string]int) (*ReverseProxy, error) {
+	// 创建权重轮询负载均衡器
+	lb := balancer.NewWeightedRoundRobin(weights)
 
 	// 为每个目标创建代理
 	proxies := make(map[string]*httputil.ReverseProxy)

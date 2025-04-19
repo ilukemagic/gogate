@@ -6,18 +6,24 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// RouteConfig 路由配置
+// 路由配置
 type RouteConfig struct {
-	Targets []string `yaml:"targets"` // 支持多个目标服务器
+	Targets []TargetConfig `yaml:"targets"` // 支持多个目标服务器
 }
 
-// ProxyConfig 代理配置
+// 目标服务器配置
+type TargetConfig struct {
+	URL    string `yaml:"url"`    // 服务器地址
+	Weight int    `yaml:"weight"` // 权重
+}
+
+// 代理配置
 type ProxyConfig struct {
 	Listen string                 `yaml:"listen"`
 	Routes map[string]RouteConfig `yaml:"routes"`
 }
 
-// Config 全局配置
+// 全局配置
 type Config struct {
 	Proxy ProxyConfig `yaml:"proxy"`
 }
@@ -34,16 +40,4 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	return cfg, nil
-}
-
-// DefaultConfig 仅用于开发测试
-func DefaultConfig() *Config {
-	return &Config{
-		Proxy: ProxyConfig{
-			Listen: ":8080",
-			Routes: map[string]RouteConfig{
-				"/api/test": {Targets: []string{"http://localhost:8081"}},
-			},
-		},
-	}
 }
