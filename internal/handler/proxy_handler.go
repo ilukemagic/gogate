@@ -4,20 +4,21 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ilukemagic/gogate/internal/config"
 	"github.com/ilukemagic/gogate/internal/proxy"
 )
 
-// ProxyHandler 处理代理请求
+// 处理代理请求
 type ProxyHandler struct {
 	proxies map[string]*proxy.ReverseProxy
 }
 
-// NewProxyHandler 创建新的代理处理器
-func NewProxyHandler(routes map[string]string) (*ProxyHandler, error) {
+// 创建新的代理处理器
+func NewProxyHandler(routes map[string]config.RouteConfig) (*ProxyHandler, error) {
 	proxies := make(map[string]*proxy.ReverseProxy)
 
-	for path, targetURL := range routes {
-		p, err := proxy.NewReverseProxy(targetURL)
+	for path, route := range routes {
+		p, err := proxy.NewReverseProxy(route.Targets)
 		if err != nil {
 			return nil, err
 		}
