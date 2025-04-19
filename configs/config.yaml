@@ -13,3 +13,8 @@ proxy:
           weight: 1
         - url: "http://localhost:8084"
           weight: 1
+
+jwt:
+  secretKey: "your-secret-key-here"
+  exclude:
+    - "/health"

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,8 +37,36 @@ func main() {
 		counts := make(map[string]int)
 		total := 0
 
+		// 先获取token
+		loginPayload := []byte(`{"username":"test","password":"test"}`)
+		resp, err := http.Post("http://localhost:8080/api/auth/login",
+			"application/json", bytes.NewBuffer(loginPayload))
+		if err != nil {
+			fmt.Printf("获取Token失败: %v\n", err)
+			return
+		}
+
+		var loginResult map[string]interface{}
+		json.NewDecoder(resp.Body).Decode(&loginResult)
+		resp.Body.Close()
+
+		token := loginResult["token"].(string)
+
+		if token == "" {
+			fmt.Println("无法获取有效Token，统计功能无法使用")
+			return
+		}
+
+		fmt.Println("已获取Token，开始收集统计数据...")
+
 		for {
-			resp, err := http.Get("http://localhost:8080/api/test")
+			// 创建请求并添加Authorization头
+			req, _ := http.NewRequest("GET", "http://localhost:8080/api/test", nil)
+			req.Header.Add("Authorization", "Bearer "+token)
+
+			// 发送请求
+			client := &http.Client{}
+			resp, err := client.Do(req)
 			if err != nil {
 				fmt.Printf("Error making request: %v\n", err)
 				time.Sleep(time.Second)

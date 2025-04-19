@@ -23,9 +23,16 @@ type ProxyConfig struct {
 	Routes map[string]RouteConfig `yaml:"routes"`
 }
 
+// JWT 配置
+type JWTConfig struct {
+	SecretKey string   `yaml:"secretKey"`
+	Exclude   []string `yaml:"exclude"` // 不需要验证的路径
+}
+
 // 全局配置
 type Config struct {
 	Proxy ProxyConfig `yaml:"proxy"`
+	JWT   JWTConfig   `yaml:"jwt"`
 }
 
 func LoadConfig(path string) (*Config, error) {
